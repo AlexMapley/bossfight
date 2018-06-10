@@ -3,6 +3,8 @@ package main
 import (
 	"image"
 	"os"
+	"fmt"
+	"math"
 
 	_ "image/png"
 
@@ -40,9 +42,20 @@ func run() {
 	dolph := pixel.NewSprite(mainCharacter, mainCharacter.Bounds())
 
 	win.Clear(colornames.Skyblue)
-	dolph.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
+
+	// Pixe.IM stands for Pixel "Identity Matrix"
+	mat := pixel.IM
+	mat = mat.Moved(win.Bounds().Center())
+	dolph.Draw(win, mat)
+
+	u := pixel.V(2.7, 5)
+	v := pixel.V(10, 3.14)
+	w := u.Add(v)
+	fmt.Println(w.X) // 12.7
 
   for !win.Closed() {
+		mat = mat.Rotated(win.Bounds().Center(), math.Pi/64)
+		dolph.Draw(win, mat)
 		win.Update()
 	}
 }
