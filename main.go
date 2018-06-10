@@ -3,8 +3,6 @@ package main
 import (
 	"image"
 	"os"
-	"fmt"
-	"math"
 
 	_ "image/png"
 
@@ -34,12 +32,15 @@ func run() {
 		panic(err)
 	}
 
-	mainCharacter, err := loadPicture("images/dolph.png")
+	// Removes pixelation effect on sprite movement
+	win.SetSmooth(true)
+
+	dolphPic, err := loadPicture("images/dolph.png")
 	if err != nil {
 		panic(err)
 	}
 
-	dolph := pixel.NewSprite(mainCharacter, mainCharacter.Bounds())
+	dolph := pixel.NewSprite(dolphPic, dolphPic.Bounds())
 
 	win.Clear(colornames.Skyblue)
 
@@ -48,13 +49,25 @@ func run() {
 	mat = mat.Moved(win.Bounds().Center())
 	dolph.Draw(win, mat)
 
-	u := pixel.V(2.7, 5)
-	v := pixel.V(10, 3.14)
-	w := u.Add(v)
-	fmt.Println(w.X) // 12.7
+	
+	// Sprite attributes
+	dolphAngle := 0.0
 
+	// Main window loop
   for !win.Closed() {
-		mat = mat.Rotated(win.Bounds().Center(), math.Pi/64)
+
+		// Clear screen
+		win.Clear(colornames.Skyblue)
+
+		// Attribute updates
+		dolphAngle += 0.05
+
+
+
+		mat := pixel.IM
+		mat = mat.Rotated(pixel.ZV, dolphAngle)
+		mat = mat.Moved(win.Bounds().Center())
+
 		dolph.Draw(win, mat)
 		win.Update()
 	}
