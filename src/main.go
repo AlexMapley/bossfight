@@ -33,6 +33,10 @@ func main() {
 // Actual executable code
 func run() {
 
+
+  fmt.Println("game started")
+
+
   cfg := pixelgl.WindowConfig{
 		Title:  "Boss Fight!",
 		Bounds: pixel.R(0, 0, 1024, 768),
@@ -70,12 +74,12 @@ func run() {
 
 	// Player Position Attributes
 	playerLocation := win.Bounds().Center()
-	//playerAngle := 0.0
+	playerAngle := 0.0
 	
 	// Camera field
 	var (
 		camPos 		= win.Bounds().Center()
-		camSpeed 	= 500.0
+		camSpeed 	= 300.0
 		camZoom      = 1.0
 		camZoomSpeed = 1.05
 	)
@@ -148,6 +152,8 @@ func run() {
 
 
 		// Moving the Character
+
+		// Strafing Left
 		if win.Pressed(pixelgl.KeyA) {
 			// Prevents tree collision
 			collision := false
@@ -169,7 +175,12 @@ func run() {
 			if (!collision) {
 				playerLocation.X -= 5
 			}
+
+			// Camera follows
+			camPos.X -= camSpeed * deltatTime
 		}
+
+		// Strafing Right
 		if win.Pressed(pixelgl.KeyD) {
 			// Prevents tree collision
 			collision := false
@@ -190,7 +201,12 @@ func run() {
 			if (!collision) {
 				playerLocation.X += 5
 			}
+
+			// Camera follows
+			camPos.X += camSpeed * deltatTime
 		}
+
+		// Moving Down
 		if win.Pressed(pixelgl.KeyS) {
 			// Prevents tree collision
 			collision := false
@@ -211,7 +227,12 @@ func run() {
 			if (!collision) {
 				playerLocation.Y -= 5
 			}
+
+			// Camera follows
+			camPos.Y -= camSpeed * deltatTime
 		}
+
+		// Moving Up
 		if win.Pressed(pixelgl.KeyW) {
 			// Prevents tree collision
 			collision := false
@@ -232,6 +253,19 @@ func run() {
 			if (!collision) {
 				playerLocation.Y += 5
 			}
+
+			// Camera follows
+			camPos.Y += camSpeed * deltatTime
+		}
+
+		// Rotating Left
+		if win.Pressed(pixelgl.KeyQ) {
+			playerAngle -= .02
+		}
+
+		// Rotating Right
+		if win.Pressed(pixelgl.KeyE) {
+			playerAngle += .02
 		}
 
 
@@ -240,6 +274,7 @@ func run() {
 		// Drawing Dolph
 		playerPosition := pixel.IM
 		playerPosition = playerPosition.ScaledXY(playerLocation, pixel.V(0.1, 0.1))
+		playerPosition = playerPosition.Rotated(playerLocation, playerAngle)
 		dolph.Draw(win, playerPosition)
 		
 
