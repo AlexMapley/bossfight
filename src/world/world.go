@@ -5,25 +5,27 @@ import (
 	"math/rand"
 	"os"
 
+	"../creatures"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 )
 
 // Global environment variables
 var (
-	Trees    		[]*pixel.Sprite
-	Enemies 		[]*pixel.Sprite
-	Matrices 		[]pixel.Matrix
-	EnemyMatrices	[]pixel.Matrix
+	Trees         []*pixel.Sprite
+	Enemies       []*pixel.Sprite
+	Matrices      []pixel.Matrix
+	EnemyMatrices []pixel.Matrix
 )
 
+func LoadTrees(win pixelgl.Window) error {
+	// New Random Seed
+	rand.Seed(int64(rand.Intn(10000)))
 
-
-func LoadTrees(win pixelgl.Window) {
 	// Load in trees
 	treeSheet, err := loadPicture("../images/trees.png")
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	// Selects tree images from pixel sheet
@@ -45,48 +47,42 @@ func LoadTrees(win pixelgl.Window) {
 		xInversion := rand.Intn(2)
 		yInversion := rand.Intn(2)
 		sizeScaler := float64(rand.Intn(10)) + 1
-		if (xInversion <= 1) {
-			xValue *= -1 
+		if xInversion <= 1 {
+			xValue *= -1
 		}
-		if (yInversion <= 1) {
-			yValue *= -1 
+		if yInversion <= 1 {
+			yValue *= -1
 		}
 		placementVector := pixel.V(float64(xValue), float64(yValue))
-		Matrices = append(Matrices, pixel.IM.Scaled(pixel.ZV, sizeScaler).Moved((win.Bounds().Center().Add(placementVector)).Scaled(5)	))
+		Matrices = append(Matrices, pixel.IM.Scaled(pixel.ZV, sizeScaler).Moved((win.Bounds().Center().Add(placementVector)).Scaled(5)))
 	}
-	return
+	return nil
 }
 
-
-func EnemyGenerator(win pixelgl.Window) {
-	// Enemy Generator
-	enemyPic, err := loadPicture("../images/alex.png")
+func EnemyGenerator(win pixelgl.Window) error {
+	// Mice Generator
+	mouse := creatures.NewMouse()
+	enemyPic, err := loadPicture(mouse.PicturePath)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	iteratorNumber2 := 0
-	for (iteratorNumber2 <= 10) {
-		iteratorNumber2 += 1
-		
+	for i := 0; i < 50; i++ {
 		enemy := pixel.NewSprite(enemyPic, enemyPic.Bounds())
-		Enemies = append(Enemies,enemy)
+		Enemies = append(Enemies, enemy)
 		xValue := rand.Intn(2000)
 		yValue := rand.Intn(2000)
 		xInversion := rand.Intn(2)
 		yInversion := rand.Intn(2)
-		//sizeScaler := float64(rand.Intn(2)) + .2
-		if (xInversion <= 1) {
-			xValue *= -1 
+		if xInversion <= 1 {
+			xValue *= -1
 		}
-		if (yInversion <= 1) {
-			yValue *= -1 
+		if yInversion <= 1 {
+			yValue *= -1
 		}
 		placementVector := pixel.V(float64(xValue), float64(yValue))
-		EnemyMatrices = append(EnemyMatrices, pixel.IM.Scaled(pixel.ZV, 1).Moved((win.Bounds().Center().Add(placementVector)).Scaled(5)	))
-		Matrices = append(Matrices, pixel.IM.Scaled(pixel.ZV, 1).Moved((win.Bounds().Center().Add(placementVector)).Scaled(5)	))
+		Matrices = append(Matrices, pixel.IM.Scaled(pixel.ZV, mouse.SizeScaler).Moved((win.Bounds().Center().Add(placementVector)).Scaled(5)))
 	}
-	
-	return
+	return nil
 }
 
 func loadPicture(path string) (pixel.Picture, error) {

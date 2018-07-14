@@ -70,8 +70,8 @@ func run() {
 	)
 
 	// Background elements
-	world.LoadTrees(*win)
-	world.EnemyGenerator(*win)
+	_ = world.LoadTrees(*win)
+	_ = world.EnemyGenerator(*win)
 
 	// Global fields
 	lastFrameTime := time.Now()
