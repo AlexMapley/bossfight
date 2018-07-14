@@ -5,10 +5,11 @@ import (
 	"os"
 	"time"
 	"math"
-	"math/rand"
 	"fmt"
 
 	_ "image/png"
+
+	"./world"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
@@ -17,11 +18,7 @@ import (
 	//"golang.org/x/image/font/basicfont"
 )
 
-// Global environment variables
-var (
-	trees    []*pixel.Sprite
-	matrices []pixel.Matrix
-)
+
 
 // Main calls the program loop
 func main() {
@@ -52,18 +49,6 @@ func run() {
 	win.SetSmooth(true)
 
 
-	// Load in trees
-	treeSheet, err := loadPicture("../images/trees.png")
-	if err != nil {
-		panic(err)
-	}
-	var treesFrames []pixel.Rect
-	for x := treeSheet.Bounds().Min.X; x < treeSheet.Bounds().Max.X; x += 32 {
-		for y := treeSheet.Bounds().Min.Y; y < treeSheet.Bounds().Max.Y; y += 32 {
-			treesFrames = append(treesFrames, pixel.R(x, y, x+32, y+32))
-		}
-	}
-
 	// Load in main character
 	dolphPic, err := loadPicture("../images/dolph.png")
 	if err != nil {
@@ -85,31 +70,14 @@ func run() {
 	)
 
 	// Background elements
-		// Random Tree generator
-		iteratorNumber := 0
-		for (iteratorNumber <= 1000) {
-			iteratorNumber += 1
-
-			tree := pixel.NewSprite(treeSheet, treesFrames[rand.Intn(len(treesFrames))])
-			trees = append(trees, tree)
-
-			xValue := rand.Intn(2000)
-			yValue := rand.Intn(2000)
-			xInversion := rand.Intn(2)
-			yInversion := rand.Intn(2)
-			if (xInversion <= 1) {
-				xValue *= -1 
-			}
-			if (yInversion <= 1) {
-				yValue *= -1 
-			}
-			placementVector := pixel.V(float64(xValue), float64(yValue))
-			matrices = append(matrices, pixel.IM.Scaled(pixel.ZV, 2).Moved(	(win.Bounds().Center().Add(placementVector)).Scaled(5)	))
-		}
-	
+	_ = world.LoadTrees(*win)
+	_ = world.EnemyGenerator(*win)
 
 	// Global fields
 	lastFrameTime := time.Now()
+
+
+
 
 	// Main window loop
   	for !win.Closed() {
@@ -124,8 +92,13 @@ func run() {
 		
 		
 		// Plant trees
-		for i, tree := range trees {
-			tree.Draw(win, matrices[i])
+		for i, tree := range world.Trees {
+			tree.Draw(win, world.Matrices[i])
+		}
+
+		// Plant Enemies
+		for i, enemy := range world.Enemies {
+			enemy.Draw(win, world.Matrices[i+len(world.Trees)])
 		}
 
 		// Moving the camera
@@ -157,20 +130,20 @@ func run() {
 		if win.Pressed(pixelgl.KeyA) {
 			// Prevents tree collision
 			collision := false
-			// for i := range trees {
+			for i := range world.Enemies {
 
-			// 	// TODO: Add absolute value function here
-			// 	if (matrices[i][4] - playerLocation.X < 15 && matrices[i][5] - playerLocation.Y < 15 && matrices[i][4] - playerLocation.X > -15 && matrices[i][5] - playerLocation.Y > -15) {
-			// 		if (matrices[i][4] - playerLocation.X > 0) {
-			// 			fmt.Println("Case1")
-			// 			fmt.Println("Matrices[i][4] ",matrices[i][4] )
-			// 			fmt.Println("playerLocation.X ", playerLocation.X)
-			// 			fmt.Println("Matrices[i][5] ",matrices[i][5] )
-			// 			fmt.Println("playerLocation.Y ", playerLocation.Y)
-			// 			collision = true
-			// 		}
-			// 	}
-			// }
+				// TODO: Add absolute value function here
+				if (world.Matrices[i][4] - playerLocation.X < 15 && world.Matrices[i][5] - playerLocation.Y < 15 && world.Matrices[i][4] - playerLocation.X > -15 && world.Matrices[i][5] - playerLocation.Y > -15) {
+					if (world.Matrices[i][4] - playerLocation.X > 0) {
+						fmt.Println("Case1")
+						fmt.Println("world.Matrices[i][4] ",world.Matrices[i][4] )
+						fmt.Println("playerLocation.X ", playerLocation.X)
+						fmt.Println("world.Matrices[i][5] ",world.Matrices[i][5] )
+						fmt.Println("playerLocation.Y ", playerLocation.Y)
+						collision = true
+					}
+				}
+			}
 
 			if (!collision) {
 				playerLocation.X -= 5
@@ -184,20 +157,20 @@ func run() {
 		if win.Pressed(pixelgl.KeyD) {
 			// Prevents tree collision
 			collision := false
-			// for i := range trees {
+			for i := range world.Enemies {
 				
-			// 	// TODO: Add absolute value function here
-			// 	if (matrices[i][4] - playerLocation.X < 15 && matrices[i][5] - playerLocation.Y < 15 && matrices[i][4] - playerLocation.X > -15 && matrices[i][5] - playerLocation.Y > -15) {
-			// 		if (matrices[i][4] - playerLocation.X < 0) {
-			// 			fmt.Println("Case2")
-			// 			fmt.Println("Matrices[i][4] ",matrices[i][4] )
-			// 			fmt.Println("playerLocation.X ", playerLocation.X)
-			// 			fmt.Println("Matrices[i][5] ",matrices[i][5] )
-			// 			fmt.Println("playerLocation.Y ", playerLocation.Y)
-			// 			collision = true
-			// 		}
-			// 	}
-			// }
+				// TODO: Add absolute value function here
+				if (world.Matrices[i][4] - playerLocation.X < 15 && world.Matrices[i][5] - playerLocation.Y < 15 && world.Matrices[i][4] - playerLocation.X > -15 && world.Matrices[i][5] - playerLocation.Y > -15) {
+					if (world.Matrices[i][4] - playerLocation.X < 0) {
+						fmt.Println("Case2")
+						fmt.Println("world.Matrices[i][4] ",world.Matrices[i][4] )
+						fmt.Println("playerLocation.X ", playerLocation.X)
+						fmt.Println("world.Matrices[i][5] ",world.Matrices[i][5] )
+						fmt.Println("playerLocation.Y ", playerLocation.Y)
+						collision = true
+					}
+				}
+			}
 			if (!collision) {
 				playerLocation.X += 5
 			}
@@ -210,20 +183,20 @@ func run() {
 		if win.Pressed(pixelgl.KeyS) {
 			// Prevents tree collision
 			collision := false
-			// for i := range trees {
+			for i := range world.Enemies {
 				
-			// 	// TODO: Add absolute value function here
-			// 	if (matrices[i][4] - playerLocation.X < 15 && matrices[i][5] - playerLocation.Y < 15 && matrices[i][4] - playerLocation.X > -15 && matrices[i][5] - playerLocation.Y > -15) {
-			// 		if (matrices[i][5] - playerLocation.Y > 0) {
-			// 			fmt.Println("Case3")
-			// 			fmt.Println("Matrices[i][4] ",matrices[i][4] )
-			// 			fmt.Println("playerLocation.X ", playerLocation.X)
-			// 			fmt.Println("Matrices[i][5] ",matrices[i][5] )
-			// 			fmt.Println("playerLocation.Y ", playerLocation.Y)
-			// 			collision = true
-			// 		}
-			// 	}
-			// }
+				// TODO: Add absolute value function here
+				if (world.Matrices[i][4] - playerLocation.X < 15 && world.Matrices[i][5] - playerLocation.Y < 15 && world.Matrices[i][4] - playerLocation.X > -15 && world.Matrices[i][5] - playerLocation.Y > -15) {
+					if (world.Matrices[i][5] - playerLocation.Y > 0) {
+						fmt.Println("Case3")
+						fmt.Println("world.Matrices[i][4] ",world.Matrices[i][4] )
+						fmt.Println("playerLocation.X ", playerLocation.X)
+						fmt.Println("world.Matrices[i][5] ",world.Matrices[i][5] )
+						fmt.Println("playerLocation.Y ", playerLocation.Y)
+						collision = true
+					}
+				}
+			}
 			if (!collision) {
 				playerLocation.Y -= 5
 			}
@@ -236,20 +209,20 @@ func run() {
 		if win.Pressed(pixelgl.KeyW) {
 			// Prevents tree collision
 			collision := false
-			// for i := range trees {
+			for i := range world.Enemies {
 				
-			// 	// TODO: Add absolute value function here
-			// 	if (matrices[i][4] - playerLocation.X < 15 && matrices[i][5] - playerLocation.Y < 15 && matrices[i][4] - playerLocation.X > -15 && matrices[i][5] - playerLocation.Y > -15) {
-			// 		if (matrices[i][5] - playerLocation.Y < 0) {
-			// 			fmt.Println("Case4")
-			// 			fmt.Println("Matrices[i][4] ",matrices[i][4] )
-			// 			fmt.Println("playerLocation.X ", playerLocation.X)
-			// 			fmt.Println("Matrices[i][5] ",matrices[i][5] )
-			// 			fmt.Println("playerLocation.Y ", playerLocation.Y)
-			// 			collision = true
-			// 		}
-			// 	}
-			// }
+				// TODO: Add absolute value function here
+				if (world.Matrices[i][4] - playerLocation.X < 15 && world.Matrices[i][5] - playerLocation.Y < 15 && world.Matrices[i][4] - playerLocation.X > -15 && world.Matrices[i][5] - playerLocation.Y > -15) {
+					if (world.Matrices[i][5] - playerLocation.Y < 0) {
+						fmt.Println("Case4")
+						fmt.Println("world.Matrices[i][4] ",world.Matrices[i][4] )
+						fmt.Println("playerLocation.X ", playerLocation.X)
+						fmt.Println("world.Matrices[i][5] ",world.Matrices[i][5] )
+						fmt.Println("playerLocation.Y ", playerLocation.Y)
+						collision = true
+					}
+				}
+			}
 			if (!collision) {
 				playerLocation.Y += 5
 			}
@@ -267,8 +240,6 @@ func run() {
 		if win.Pressed(pixelgl.KeyE) {
 			playerAngle += .02
 		}
-
-
 
 
 		// Drawing Dolph
