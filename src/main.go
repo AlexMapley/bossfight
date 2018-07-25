@@ -1,53 +1,48 @@
 package main
 
 import (
+	"fmt"
 	"image"
+	"math"
 	"os"
 	"time"
-	"math"
-	"fmt"
 
 	_ "image/png"
 
+	"./generator"
 	"./world"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
+
 	//"github.com/faiface/pixel/text"
 	"golang.org/x/image/colornames"
 	//"golang.org/x/image/font/basicfont"
 )
-
-
 
 // Main calls the program loop
 func main() {
 	pixelgl.Run(run)
 }
 
-
-
 // Actual executable code
 func run() {
 
+	fmt.Println("game started")
 
-  fmt.Println("game started")
-
-
-  cfg := pixelgl.WindowConfig{
+	cfg := pixelgl.WindowConfig{
 		Title:  "Boss Fight!",
 		Bounds: pixel.R(0, 0, 1024, 768),
 		VSync:  true,
 	}
 
-  win, err := pixelgl.NewWindow(cfg)
+	win, err := pixelgl.NewWindow(cfg)
 	if err != nil {
 		panic(err)
 	}
 
 	// Removes pixelation effect on sprite movement
 	win.SetSmooth(true)
-
 
 	// Load in main character
 	dolphPic, err := loadPicture("../images/dolph.png")
@@ -56,31 +51,27 @@ func run() {
 	}
 	dolph := pixel.NewSprite(dolphPic, dolphPic.Bounds())
 
-
 	// Player Position Attributes
 	playerLocation := win.Bounds().Center()
 	playerAngle := 0.0
-	
+
 	// Camera field
 	var (
-		camPos 		= win.Bounds().Center()
-		camSpeed 	= 300.0
+		camPos       = win.Bounds().Center()
+		camSpeed     = 300.0
 		camZoom      = 1.0
 		camZoomSpeed = 1.05
 	)
 
 	// Background elements
-	_ = world.LoadTrees(*win)
-	_ = world.EnemyGenerator(*win)
+	_ = generator.LoadTrees(*win)
+	_ = generator.EnemyGenerator(*win)
 
 	// Global fields
 	lastFrameTime := time.Now()
 
-
-
-
 	// Main window loop
-  	for !win.Closed() {
+	for !win.Closed() {
 
 		// Clear screen
 		win.Clear(colornames.Skyblue)
@@ -89,8 +80,6 @@ func run() {
 		deltatTime := time.Since(lastFrameTime).Seconds()
 		lastFrameTime = time.Now()
 
-		
-		
 		// Plant trees
 		for i, tree := range world.Trees {
 			tree.Draw(win, world.Matrices[i])
@@ -121,9 +110,6 @@ func run() {
 		}
 		camZoom *= math.Pow(camZoomSpeed, win.MouseScroll().Y)
 
-
-
-
 		// Moving the Character
 
 		// Strafing Left
@@ -133,19 +119,19 @@ func run() {
 			for i := range world.Enemies {
 
 				// TODO: Add absolute value function here
-				if (world.Matrices[i][4] - playerLocation.X < 15 && world.Matrices[i][5] - playerLocation.Y < 15 && world.Matrices[i][4] - playerLocation.X > -15 && world.Matrices[i][5] - playerLocation.Y > -15) {
-					if (world.Matrices[i][4] - playerLocation.X > 0) {
+				if world.Matrices[i][4]-playerLocation.X < 15 && world.Matrices[i][5]-playerLocation.Y < 15 && world.Matrices[i][4]-playerLocation.X > -15 && world.Matrices[i][5]-playerLocation.Y > -15 {
+					if world.Matrices[i][4]-playerLocation.X > 0 {
 						fmt.Println("Case1")
-						fmt.Println("world.Matrices[i][4] ",world.Matrices[i][4] )
+						fmt.Println("world.Matrices[i][4] ", world.Matrices[i][4])
 						fmt.Println("playerLocation.X ", playerLocation.X)
-						fmt.Println("world.Matrices[i][5] ",world.Matrices[i][5] )
+						fmt.Println("world.Matrices[i][5] ", world.Matrices[i][5])
 						fmt.Println("playerLocation.Y ", playerLocation.Y)
 						collision = true
 					}
 				}
 			}
 
-			if (!collision) {
+			if !collision {
 				playerLocation.X -= 5
 			}
 
@@ -158,20 +144,20 @@ func run() {
 			// Prevents tree collision
 			collision := false
 			for i := range world.Enemies {
-				
+
 				// TODO: Add absolute value function here
-				if (world.Matrices[i][4] - playerLocation.X < 15 && world.Matrices[i][5] - playerLocation.Y < 15 && world.Matrices[i][4] - playerLocation.X > -15 && world.Matrices[i][5] - playerLocation.Y > -15) {
-					if (world.Matrices[i][4] - playerLocation.X < 0) {
+				if world.Matrices[i][4]-playerLocation.X < 15 && world.Matrices[i][5]-playerLocation.Y < 15 && world.Matrices[i][4]-playerLocation.X > -15 && world.Matrices[i][5]-playerLocation.Y > -15 {
+					if world.Matrices[i][4]-playerLocation.X < 0 {
 						fmt.Println("Case2")
-						fmt.Println("world.Matrices[i][4] ",world.Matrices[i][4] )
+						fmt.Println("world.Matrices[i][4] ", world.Matrices[i][4])
 						fmt.Println("playerLocation.X ", playerLocation.X)
-						fmt.Println("world.Matrices[i][5] ",world.Matrices[i][5] )
+						fmt.Println("world.Matrices[i][5] ", world.Matrices[i][5])
 						fmt.Println("playerLocation.Y ", playerLocation.Y)
 						collision = true
 					}
 				}
 			}
-			if (!collision) {
+			if !collision {
 				playerLocation.X += 5
 			}
 
@@ -184,20 +170,20 @@ func run() {
 			// Prevents tree collision
 			collision := false
 			for i := range world.Enemies {
-				
+
 				// TODO: Add absolute value function here
-				if (world.Matrices[i][4] - playerLocation.X < 15 && world.Matrices[i][5] - playerLocation.Y < 15 && world.Matrices[i][4] - playerLocation.X > -15 && world.Matrices[i][5] - playerLocation.Y > -15) {
-					if (world.Matrices[i][5] - playerLocation.Y > 0) {
+				if world.Matrices[i][4]-playerLocation.X < 15 && world.Matrices[i][5]-playerLocation.Y < 15 && world.Matrices[i][4]-playerLocation.X > -15 && world.Matrices[i][5]-playerLocation.Y > -15 {
+					if world.Matrices[i][5]-playerLocation.Y > 0 {
 						fmt.Println("Case3")
-						fmt.Println("world.Matrices[i][4] ",world.Matrices[i][4] )
+						fmt.Println("world.Matrices[i][4] ", world.Matrices[i][4])
 						fmt.Println("playerLocation.X ", playerLocation.X)
-						fmt.Println("world.Matrices[i][5] ",world.Matrices[i][5] )
+						fmt.Println("world.Matrices[i][5] ", world.Matrices[i][5])
 						fmt.Println("playerLocation.Y ", playerLocation.Y)
 						collision = true
 					}
 				}
 			}
-			if (!collision) {
+			if !collision {
 				playerLocation.Y -= 5
 			}
 
@@ -210,20 +196,20 @@ func run() {
 			// Prevents tree collision
 			collision := false
 			for i := range world.Enemies {
-				
+
 				// TODO: Add absolute value function here
-				if (world.Matrices[i][4] - playerLocation.X < 15 && world.Matrices[i][5] - playerLocation.Y < 15 && world.Matrices[i][4] - playerLocation.X > -15 && world.Matrices[i][5] - playerLocation.Y > -15) {
-					if (world.Matrices[i][5] - playerLocation.Y < 0) {
+				if world.Matrices[i][4]-playerLocation.X < 15 && world.Matrices[i][5]-playerLocation.Y < 15 && world.Matrices[i][4]-playerLocation.X > -15 && world.Matrices[i][5]-playerLocation.Y > -15 {
+					if world.Matrices[i][5]-playerLocation.Y < 0 {
 						fmt.Println("Case4")
-						fmt.Println("world.Matrices[i][4] ",world.Matrices[i][4] )
+						fmt.Println("world.Matrices[i][4] ", world.Matrices[i][4])
 						fmt.Println("playerLocation.X ", playerLocation.X)
-						fmt.Println("world.Matrices[i][5] ",world.Matrices[i][5] )
+						fmt.Println("world.Matrices[i][5] ", world.Matrices[i][5])
 						fmt.Println("playerLocation.Y ", playerLocation.Y)
 						collision = true
 					}
 				}
 			}
-			if (!collision) {
+			if !collision {
 				playerLocation.Y += 5
 			}
 
@@ -241,21 +227,16 @@ func run() {
 			playerAngle += .02
 		}
 
-
 		// Drawing Dolph
 		playerPosition := pixel.IM
 		playerPosition = playerPosition.ScaledXY(playerLocation, pixel.V(0.1, 0.1))
 		playerPosition = playerPosition.Rotated(playerLocation, playerAngle)
 		dolph.Draw(win, playerPosition)
-		
-
 
 		// Update window
 		win.Update()
 	}
 }
-
-
 
 func loadPicture(path string) (pixel.Picture, error) {
 	file, err := os.Open(path)
@@ -269,4 +250,3 @@ func loadPicture(path string) (pixel.Picture, error) {
 	}
 	return pixel.PictureDataFromImage(img), nil
 }
-
