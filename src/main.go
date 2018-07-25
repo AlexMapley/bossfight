@@ -114,105 +114,28 @@ func run() {
 
 		// Strafing Left
 		if win.Pressed(pixelgl.KeyA) {
-			// Prevents tree collision
-			collision := false
-			for i := range world.Enemies {
-
-				// TODO: Add absolute value function here
-				if world.Matrices[i][4]-playerLocation.X < 15 && world.Matrices[i][5]-playerLocation.Y < 15 && world.Matrices[i][4]-playerLocation.X > -15 && world.Matrices[i][5]-playerLocation.Y > -15 {
-					if world.Matrices[i][4]-playerLocation.X > 0 {
-						fmt.Println("Case1")
-						fmt.Println("world.Matrices[i][4] ", world.Matrices[i][4])
-						fmt.Println("playerLocation.X ", playerLocation.X)
-						fmt.Println("world.Matrices[i][5] ", world.Matrices[i][5])
-						fmt.Println("playerLocation.Y ", playerLocation.Y)
-						collision = true
-					}
-				}
-			}
-
-			if !collision {
-				playerLocation.X -= 5
-			}
-
+			playerLocation.X -= 5
 			// Camera follows
 			camPos.X -= camSpeed * deltatTime
 		}
 
 		// Strafing Right
 		if win.Pressed(pixelgl.KeyD) {
-			// Prevents tree collision
-			collision := false
-			for i := range world.Enemies {
-
-				// TODO: Add absolute value function here
-				if world.Matrices[i][4]-playerLocation.X < 15 && world.Matrices[i][5]-playerLocation.Y < 15 && world.Matrices[i][4]-playerLocation.X > -15 && world.Matrices[i][5]-playerLocation.Y > -15 {
-					if world.Matrices[i][4]-playerLocation.X < 0 {
-						fmt.Println("Case2")
-						fmt.Println("world.Matrices[i][4] ", world.Matrices[i][4])
-						fmt.Println("playerLocation.X ", playerLocation.X)
-						fmt.Println("world.Matrices[i][5] ", world.Matrices[i][5])
-						fmt.Println("playerLocation.Y ", playerLocation.Y)
-						collision = true
-					}
-				}
-			}
-			if !collision {
-				playerLocation.X += 5
-			}
-
+			playerLocation.X += 5
 			// Camera follows
 			camPos.X += camSpeed * deltatTime
 		}
 
 		// Moving Down
 		if win.Pressed(pixelgl.KeyS) {
-			// Prevents tree collision
-			collision := false
-			for i := range world.Enemies {
-
-				// TODO: Add absolute value function here
-				if world.Matrices[i][4]-playerLocation.X < 15 && world.Matrices[i][5]-playerLocation.Y < 15 && world.Matrices[i][4]-playerLocation.X > -15 && world.Matrices[i][5]-playerLocation.Y > -15 {
-					if world.Matrices[i][5]-playerLocation.Y > 0 {
-						fmt.Println("Case3")
-						fmt.Println("world.Matrices[i][4] ", world.Matrices[i][4])
-						fmt.Println("playerLocation.X ", playerLocation.X)
-						fmt.Println("world.Matrices[i][5] ", world.Matrices[i][5])
-						fmt.Println("playerLocation.Y ", playerLocation.Y)
-						collision = true
-					}
-				}
-			}
-			if !collision {
-				playerLocation.Y -= 5
-			}
-
+			playerLocation.Y -= 5
 			// Camera follows
 			camPos.Y -= camSpeed * deltatTime
 		}
 
 		// Moving Up
 		if win.Pressed(pixelgl.KeyW) {
-			// Prevents tree collision
-			collision := false
-			for i := range world.Enemies {
-
-				// TODO: Add absolute value function here
-				if world.Matrices[i][4]-playerLocation.X < 15 && world.Matrices[i][5]-playerLocation.Y < 15 && world.Matrices[i][4]-playerLocation.X > -15 && world.Matrices[i][5]-playerLocation.Y > -15 {
-					if world.Matrices[i][5]-playerLocation.Y < 0 {
-						fmt.Println("Case4")
-						fmt.Println("world.Matrices[i][4] ", world.Matrices[i][4])
-						fmt.Println("playerLocation.X ", playerLocation.X)
-						fmt.Println("world.Matrices[i][5] ", world.Matrices[i][5])
-						fmt.Println("playerLocation.Y ", playerLocation.Y)
-						collision = true
-					}
-				}
-			}
-			if !collision {
-				playerLocation.Y += 5
-			}
-
+			playerLocation.Y += 5
 			// Camera follows
 			camPos.Y += camSpeed * deltatTime
 		}

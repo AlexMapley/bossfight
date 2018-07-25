@@ -27,14 +27,13 @@ func loadPicture(path string) (pixel.Picture, error) {
 // Generates wave of enemies,
 // based on the player level
 func EnemyGenerator(win pixelgl.Window) error {
-	mouse := creatures.NewMouse()
-	enemyPic, err := loadPicture(mouse.PicturePath)
-	if err != nil {
-		return err
-	}
 	for i := 0; i < 50; i++ {
+		mouse := creatures.NewMouse()
+		enemyPic, err := loadPicture(mouse.PicturePath)
+		if err != nil {
+			return err
+		}
 		enemy := pixel.NewSprite(enemyPic, enemyPic.Bounds())
-		world.Enemies = append(world.Enemies, enemy)
 		xValue := rand.Intn(2000)
 		yValue := rand.Intn(2000)
 		xInversion := rand.Intn(2)
@@ -45,8 +44,9 @@ func EnemyGenerator(win pixelgl.Window) error {
 		if yInversion <= 1 {
 			yValue *= -1
 		}
-		placementVector := pixel.V(float64(xValue), float64(yValue))
-		world.Matrices = append(world.Matrices, pixel.IM.Scaled(pixel.ZV, mouse.SizeScaler).Moved((win.Bounds().Center().Add(placementVector)).Scaled(5)))
+		mouse.Position = pixel.V(float64(xValue), float64(yValue))
+		world.Enemies = append(world.Enemies, enemy)
+		world.Matrices = append(world.Matrices, pixel.IM.Scaled(pixel.ZV, mouse.SizeScaler).Moved((win.Bounds().Center().Add(mouse.Position)).Scaled(5)))
 	}
 	return nil
 }

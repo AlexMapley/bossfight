@@ -1,9 +1,12 @@
 package creatures
 
+import "github.com/faiface/pixel"
+
 type Boar struct {
 	Base        *Creature
-	SizeScaler  float64
 	PicturePath string
+	Position    pixel.Vec
+	SizeScaler  float64
 	Health      int
 }
 
