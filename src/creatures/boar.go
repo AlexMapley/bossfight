@@ -15,6 +15,7 @@ func NewBoar() *Boar {
 		SizeScaler:  .35,
 		PicturePath: "../images/boar.png",
 		Health:      25,
+		Position:    pixel.V(0, 0),
 	}
 	return &newBoar
 }

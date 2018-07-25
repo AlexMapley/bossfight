@@ -15,6 +15,7 @@ func NewPlayer() *Player {
 		SizeScaler:  .15,
 		PicturePath: "../images/dolph.png",
 		Health:      10,
+		Position:    pixel.V(0, 0),
 	}
 	return &newPlayer
 }
