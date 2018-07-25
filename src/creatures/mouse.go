@@ -7,7 +7,7 @@ type Mouse struct {
 
 func NewMouse() *Mouse {
 	newMouse := Mouse{
-		SizeScaler:  .25,
+		SizeScaler:  .15,
 		PicturePath: "../images/mouse.png",
 	}
 	return &newMouse

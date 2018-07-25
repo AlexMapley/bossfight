@@ -82,6 +82,29 @@ func EnemyGenerator(win pixelgl.Window) error {
 		placementVector := pixel.V(float64(xValue), float64(yValue))
 		Matrices = append(Matrices, pixel.IM.Scaled(pixel.ZV, mouse.SizeScaler).Moved((win.Bounds().Center().Add(placementVector)).Scaled(5)))
 	}
+
+	// Boar Generator
+	boar := creatures.NewBoar()
+	enemyPic, err = loadPicture(boar.PicturePath)
+	if err != nil {
+		return err
+	}
+	for i := 0; i < 20; i++ {
+		enemy := pixel.NewSprite(enemyPic, enemyPic.Bounds())
+		Enemies = append(Enemies, enemy)
+		xValue := rand.Intn(2000)
+		yValue := rand.Intn(2000)
+		xInversion := rand.Intn(2)
+		yInversion := rand.Intn(2)
+		if xInversion <= 1 {
+			xValue *= -1
+		}
+		if yInversion <= 1 {
+			yValue *= -1
+		}
+		placementVector := pixel.V(float64(xValue), float64(yValue))
+		Matrices = append(Matrices, pixel.IM.Scaled(pixel.ZV, boar.SizeScaler).Moved((win.Bounds().Center().Add(placementVector)).Scaled(5)))
+	}
 	return nil
 }
 
